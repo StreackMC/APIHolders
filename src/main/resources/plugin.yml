@@ -1,0 +1,8 @@
+name: APIHolders
+version: ${project.version}
+author: "StreackMC Team"
+description: "A simple plugin that provides a http-api with the ability to get PlaceHoldersAPI."
+website: https://github.com/StreackMC/APIHolders
+
+api-version: '1.14'
+main: io.github.streackmc.apiholders.MyPlugin
