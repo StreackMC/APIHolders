@@ -3,7 +3,6 @@ package com.github.streackmc.APIHolders;
 import com.github.streackmc.StreackLib.StreackLib;
 import com.github.streackmc.StreackLib.utils.HTTPServer;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import fi.iki.elonen.NanoHTTPD;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -117,7 +116,7 @@ public class plugin extends JavaPlugin {
         }
 
         /* 返回 JSON */
-        return jsonResponse(200, "OK", parsed, parsed.replace('§', '&'));
+        return jsonResponse(200, "OK", parsed);
       } catch (Exception ex) {
         ex.printStackTrace();
         return jsonResponse(500, "Internal server error", null, null);
@@ -157,20 +156,25 @@ public class plugin extends JavaPlugin {
 
   /**
    * 快速封装 JSON 响应
+   * @param int code: HTTP状态码，默认500
+   * @param String info: 对状态码的解释，默认空
+   * @param String mc: 以MC格式返回的结果，默认空
+   * @return 封装完毕的JSON对象
    */
-  private NanoHTTPD.Response jsonResponse(int code, String info, String mc, String text) {
-    JSONObject root = new JSONObject();
+  @SuppressWarnings("unchecked")
+  private NanoHTTPD.Response jsonResponse(Integer code, String info, String mc) {
+    if (code == null) { code = 500; }
+    if (mc == null) { mc = ""; }
+    if (info == null) { info = ""; }
     JSONObject status = new JSONObject();
     status.put("code", code);
     status.put("info", info);
+    JSONObject respond = new JSONObject();
+    respond.put("mc", mc);
+    respond.put("plain", mc.replaceAll("§[0-9a-zA-Z]", ""));
+    JSONObject root = new JSONObject();
     root.put("status", status);
-
-    if (mc != null && text != null) {
-      JSONObject value = new JSONObject();
-      value.put("mc", mc);
-      value.put("text", text);
-      root.put("value", value);
-    }
+    root.put("result", respond);
     return newFixedLengthResponse(NanoHTTPD.Response.Status.lookup(code),
         "application/json", root.toJSONString());
   }
