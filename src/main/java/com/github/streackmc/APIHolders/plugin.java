@@ -96,14 +96,23 @@ public class plugin extends JavaPlugin {
         }
         /* 读取参数 */
         Map<String, List<String>> param = session.getParameters();
-        String query = String.join("", param.get("query"));
-        String target = String.join("", param.get("target"));
-        if (query.isEmpty()) {
+        String query;
+        String target;
+        if (param.get("query") == null) {
           return jsonResponse(400, "Bad Request: Missing parameter [query].", null);
-        } else if (!query.startsWith("%")) {
-          query = "%" + query;
-        } else if (!query.endsWith("%")) {
-          query = query + "%";
+        } else {
+          query = String.join("", param.get("query"));
+          if (!query.startsWith("%")) {
+            query = "%" + query;
+          }
+          if (!query.endsWith("%")) {
+            query = query + "%";
+          }
+        }
+        if (param.get("target") == null) {
+          target = null;
+        } else {
+          target = String.join("", param.get("target"));
         }
         /* 名单过滤 */
         if (!isUsableHolder(query)) {
