@@ -12,9 +12,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 
 public class plugin extends JavaPlugin {
@@ -93,33 +93,34 @@ public class plugin extends JavaPlugin {
         /* 仅处理 GET */
         if (!NanoHTTPD.Method.GET.equals(session.getMethod())) {
           return newFixedLengthResponse(NanoHTTPD.Response.Status.METHOD_NOT_ALLOWED,
-              NanoHTTPD.MIME_PLAINTEXT, "Not allowed ");
+              NanoHTTPD.MIME_PLAINTEXT, "Method GET Allowed Only.");
         }
         /* 读取参数 */
-        String query = session.getParameters["query"];
-        String target = session.getParms().get("target");
-        if (query == null || query.isEmpty()) {
-          return jsonResponse(400, "Missing parameter: query", null, null);
+        Map<String, List<String>> param = session.getParameters();
+        String query = String.join("", param.get("query"));
+        String target = String.join("", param.get("target"));
+        if (query.isEmpty()) {
+          return jsonResponse(400, "Bad Request: Missing parameter [query].", null);
+        } else if (!query.startsWith("%")) {
+          query = "%" + query;
+        } else if (!query.endsWith("%")) {
+          query = query + "%";
         }
-
         /* 名单过滤 */
         if (!passFilter(query)) {
-          return jsonResponse(403, "Placeholder forbidden by list", null, null);
+          return jsonResponse(403, "Forbidden: The Placeholder was forbidden by server admin. Contact them for help.", null);
         }
-
-        /* 解析目标 */
+        /* 解析目标并返回 */
         String parsed;
         if (target == null || target.equalsIgnoreCase("server") || target.equalsIgnoreCase("console")) {
-          parsed = PlaceholderAPI.setPlaceholders(null, "%" + query + "%");
+          parsed = PlaceholderAPI.setPlaceholders(null, query);
         } else {
-          parsed = PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(target), "%" + query + "%");
-        }
-
+          parsed = PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(target), query);
         /* 返回 JSON */
-        return jsonResponse(200, "OK", parsed);
+        return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
       } catch (Exception ex) {
         ex.printStackTrace();
-        return jsonResponse(500, "Internal server error", null, null);
+        return jsonResponse(500, "Internal Server Error: Unknown error emerged.", null);
       }
     });
     getLogger().info("已注册 HTTP 监听路径: " + path);
