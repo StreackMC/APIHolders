@@ -1,9 +1,14 @@
-host: 127.0.0.1
-port: 12345
+# 监听路径，必须以 / 开头
+path: "/api/placeholder"
 
-# 是否使用白名单，即只允许匹配的PhAPI被查询
-whist-mode: true
-# 匹配名单，接受正则表达式或文字，无需带%
+# 启用即白名单，只允许查询匹配的；否则为黑名单，允许查询全部不匹配的（不推荐）
+white-mode: true
+
+# 名单列表，支持两种写法：
+# 1. 普通字符串，全匹配（忽略大小写）
+# 2. "regex:正则表达式"  正则匹配
+# 无需携带%
 list:
-  - /cmi/
-  
+  - "player_name"
+  - "server_online"
+  - "regex:server_.*"
