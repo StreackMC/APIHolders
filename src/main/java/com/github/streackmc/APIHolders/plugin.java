@@ -31,12 +31,11 @@ public class plugin extends JavaPlugin {
   public void onEnable() {
     getLogger().info("正在启用APIHolders...");
     /* 检测 StreackLib */
-    if (!Bukkit.getPluginManager().isPluginEnabled("StreackLib")) {
+    StreackLib StreackLib = (StreackLib) Bukkit.getPluginManager().getPlugin("StreackLib");
+    if (StreackLib == null || !StreackLib.isEnabled()) {
       getLogger().severe("启用失败：未检测到StreackLib");
       getServer().getPluginManager().disablePlugin(this);
       return;
-    } else {
-      StreackLib = new StreackLib();
     }
     /* 检测 PlaceholderAPI */
     if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
