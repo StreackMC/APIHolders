@@ -1,10 +1,9 @@
-grass-drops: [ ]
-world-blacklist:
-  - world_nether
-  - world_the_end
-chances:
-  TREE: 22
-  BUSH: 16
-options:
-  auto-update: false
-  auto-generate-plants: true
+host: 127.0.0.1
+port: 12345
+
+# 是否使用白名单，即只允许匹配的PhAPI被查询
+whist-mode: true
+# 匹配名单，接受正则表达式或文字，无需带%
+list:
+  - /cmi/
+  

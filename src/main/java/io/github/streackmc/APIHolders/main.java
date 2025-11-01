@@ -1,9 +1,9 @@
-package io.github.streackmc.apiholders;
+package io.github.streackmc.APIHolders;
 
 import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class MyPlugin extends JavaPlugin {
+public class main extends JavaPlugin {
     // This code is called after the server starts and after the /reload command
     @Override
     public void onEnable() {
