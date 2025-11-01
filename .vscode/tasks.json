@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ENV | Install Maven Env (Linux)",
+      "promptOnClose": true,
+      "type": "shell",
+      "command": "sudo apt install maven -y",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "ENV | Uninstall Maven Env (Linux)",
+      "promptOnClose": true,
+      "type": "shell",
+      "command": "sudo apt remove maven -y",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Build with maven",
+      "promptOnClose": true,
+      "type": "shell",
+      "command": "mvn package --file pom.xml",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+  ]
+}
