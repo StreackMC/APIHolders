@@ -2,13 +2,13 @@ package com.github.streackmc.APIHolders;
 
 import com.github.streackmc.StreackLib.StreackLib;
 import com.github.streackmc.StreackLib.utils.HTTPServer;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fi.iki.elonen.NanoHTTPD;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import java.util.List;
@@ -114,11 +114,17 @@ public class plugin extends JavaPlugin {
         String parsed;
         if (target == null || target.equalsIgnoreCase("server") || target.equalsIgnoreCase("console")) {
           parsed = PlaceholderAPI.setPlaceholders(null, query);
+          return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
+          // TODO: 兼容离线玩家处理并接入StreackLib的玩家
         } else {
-          parsed = PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(target), query);
+          Player targetPlayer = Bukkit.getPlayer(target);
+          parsed = PlaceholderAPI.setPlaceholders(targetPlayer, query);
+          if (targetPlayer == null) {
+            return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
+          } else {
+            return jsonResponse(203, "OK: Notice that your target player is offline or can't be found.", parsed);
+          }
         }
-        /* 返回 JSON */
-        return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
       } catch (Exception ex) {
         ex.printStackTrace();
         return jsonResponse(500, "Internal Server Error: Unknown error emerged.", null);
