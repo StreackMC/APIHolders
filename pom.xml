@@ -35,6 +35,10 @@
       <id>bstats-repo</id>
       <url>https://repo.codemc.org/repository/maven-public</url>
     </repository>
+    <repository>
+      <id>placeholderapi</id>
+      <url>https://repo.extendedclip.com/releases/</url>
+    </repository>
   </repositories>
 
   <!-- Dependencies -->
@@ -44,6 +48,17 @@
       <artifactId>StreackLib</artifactId>
       <version>${streacklib.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.clip</groupId>
+      <artifactId>placeholderapi</artifactId>
+      <version>2.11.6</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
     </dependency>
     <!-- Basic -->
     <dependency>
