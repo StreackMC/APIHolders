@@ -107,7 +107,7 @@ public class plugin extends JavaPlugin {
           query = query + "%";
         }
         /* 名单过滤 */
-        if (!passFilter(query)) {
+        if (!isUsableHolder(query)) {
           return jsonResponse(403, "Forbidden: The Placeholder was forbidden by server admin. Contact them for help.", null);
         }
         /* 解析目标并返回 */
@@ -116,6 +116,7 @@ public class plugin extends JavaPlugin {
           parsed = PlaceholderAPI.setPlaceholders(null, query);
         } else {
           parsed = PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(target), query);
+        }
         /* 返回 JSON */
         return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
       } catch (Exception ex) {
@@ -131,7 +132,7 @@ public class plugin extends JavaPlugin {
    * @param placeholder 要判断的PlaceholderAPI
    * @return boolean
    */
-  private boolean passFilter(String placeholder) {
+  private boolean isUsableHolder(String placeholder) {
     if (rawList == null || rawList.isEmpty()) {
       /* 空名单：白名单默认拒绝，黑名单默认通过 */
       return !whiteMode;
