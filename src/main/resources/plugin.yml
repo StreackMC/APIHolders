@@ -4,5 +4,5 @@ author: "StreackMC Team"
 description: ${project.description}
 website: https://github.com/StreackMC/APIHolders
 api-version: '1.14'
-main: io.github.streackmc.APIHolders.main
-depend: ["StreackLib"]
+main: com.github.streackmc.APIHolders.plugin
+depend: ["StreackLib", "PlaceholderAPI"]

@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>APIHolders</artifactId>
-  <groupId>io.github.streackmc.APIHolders</groupId>
+  <groupId>com.github.streackmc</groupId>
   <version>0.1.0</version>
   <packaging>jar</packaging>
   <description>为服务器提供基于HTTPServer的PlaceHoldersAPI查询能力</description>
 
   <properties>
-    <streacklib.version>0.1.0</streacklib.version>
+    <streacklib.version>master-SNAPSHOT</streacklib.version>
     <maven.compiler.souce>17</maven.compiler.souce>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,6 +39,12 @@
 
   <!-- Dependencies -->
   <dependencies>
+    <dependency>
+      <groupId>com.github.StreackMC</groupId>
+      <artifactId>StreackLib</artifactId>
+      <version>${streacklib.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Basic -->
     <dependency>
       <groupId>org.spigotmc</groupId>
@@ -57,11 +63,6 @@
       <artifactId>jsr305</artifactId>
       <version>3.0.2</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.StreackMC</groupId>
-      <artifactId>StreackLib</artifactId>
-      <version>${streacklib.version}</version>
     </dependency>
   </dependencies>
 
