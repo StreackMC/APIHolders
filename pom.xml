@@ -9,7 +9,8 @@
   <description>为服务器提供基于HTTPServer的PlaceHoldersAPI查询能力</description>
 
   <properties>
-    <streacklib.version>master-SNAPSHOT</streacklib.version>
+    <streacklib.version>0.3.0</streacklib.version>
+    <!-- <streacklib.version>master-SNAPSHOT</streacklib.version> -->
     <maven.compiler.souce>17</maven.compiler.souce>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

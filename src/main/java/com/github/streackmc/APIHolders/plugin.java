@@ -9,6 +9,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import java.util.List;
@@ -21,7 +22,6 @@ public class plugin extends JavaPlugin {
 
   public HTTPServer httpServer;
   public FileConfiguration conf;
-  public StreackLib StreackLib;
   public String path;
   public Boolean whiteMode;
   public List<?> rawList;
@@ -31,8 +31,8 @@ public class plugin extends JavaPlugin {
   public void onEnable() {
     getLogger().info("正在启用APIHolders...");
     /* 检测 StreackLib */
-    StreackLib StreackLib = (StreackLib) Bukkit.getPluginManager().getPlugin("StreackLib");
-    if (StreackLib == null || !StreackLib.isEnabled()) {
+    Plugin StreackLib_paper = Bukkit.getPluginManager().getPlugin("StreackLib");
+    if (StreackLib_paper == null || !StreackLib_paper.isEnabled()) {
       getLogger().severe("启用失败：未检测到StreackLib");
       getServer().getPluginManager().disablePlugin(this);
       return;
@@ -65,8 +65,7 @@ public class plugin extends JavaPlugin {
    * @return void
    */
   private void reloadConf() {
-    // 当前版本禁止再次调用，因为StreackLib还不支持取消注册监听
-    // 目前实现，未来使用
+    httpServer.removeHandler(path);
     saveDefaultConfig();
     conf = getConfig();
     path = conf.getString("path", "/api/placeholder");
@@ -87,57 +86,63 @@ public class plugin extends JavaPlugin {
    * @return void
    */
   private void registerHttpHandler() {
-    httpServer.registerHandler(path, session -> {
-      try {
-        /* 仅处理 GET */
-        if (!NanoHTTPD.Method.GET.equals(session.getMethod())) {
-          return newFixedLengthResponse(NanoHTTPD.Response.Status.METHOD_NOT_ALLOWED,
-              NanoHTTPD.MIME_PLAINTEXT, "Method GET Allowed Only.");
-        }
-        /* 读取参数 */
-        Map<String, List<String>> param = session.getParameters();
-        String query;
-        String target;
-        if (param.get("query") == null) {
-          return jsonResponse(400, "Bad Request: Missing parameter [query].", null);
-        } else {
-          query = String.join("", param.get("query"));
-          if (!query.startsWith("%")) {
-            query = "%" + query;
+    try {
+      httpServer.registerHandler(path, session -> {
+        try {
+          /* 仅处理 GET */
+          if (!NanoHTTPD.Method.GET.equals(session.getMethod())) {
+            return newFixedLengthResponse(NanoHTTPD.Response.Status.METHOD_NOT_ALLOWED,
+                NanoHTTPD.MIME_PLAINTEXT, "Method GET Allowed Only.");
           }
-          if (!query.endsWith("%")) {
-            query = query + "%";
-          }
-        }
-        if (param.get("target") == null) {
-          target = null;
-        } else {
-          target = String.join("", param.get("target"));
-        }
-        /* 名单过滤 */
-        if (!isUsableHolder(query)) {
-          return jsonResponse(403, "Forbidden: The Placeholder was forbidden by server admin. Contact them for help.", null);
-        }
-        /* 解析目标并返回 */
-        String parsed;
-        if (target == null || target.equalsIgnoreCase("server") || target.equalsIgnoreCase("console")) {
-          parsed = PlaceholderAPI.setPlaceholders(null, query);
-          return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
-          // TODO: 兼容离线玩家处理并接入StreackLib的玩家
-        } else {
-          Player targetPlayer = Bukkit.getPlayer(target);
-          parsed = PlaceholderAPI.setPlaceholders(targetPlayer, query);
-          if (targetPlayer == null) {
-            return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
+          /* 读取参数 */
+          Map<String, List<String>> param = session.getParameters();
+          String query;
+          String target;
+          if (param.get("query") == null) {
+            return jsonResponse(400, "Bad Request: Missing parameter [query].", null);
           } else {
-            return jsonResponse(203, "OK: Notice that your target player is offline or can't be found.", parsed);
+            query = String.join("", param.get("query"));
+            if (!query.startsWith("%")) {
+              query = "%" + query;
+            }
+            if (!query.endsWith("%")) {
+              query = query + "%";
+            }
           }
+          if (param.get("target") == null) {
+            target = null;
+          } else {
+            target = String.join("", param.get("target"));
+          }
+          /* 名单过滤 */
+          if (!isUsableHolder(query)) {
+            return jsonResponse(403, "Forbidden: The Placeholder was forbidden by server admin. Contact them for help.", null);
+          }
+          /* 解析目标并返回 */
+          String parsed;
+          if (target == null || target.equalsIgnoreCase("server") || target.equalsIgnoreCase("console")) {
+            parsed = PlaceholderAPI.setPlaceholders(null, query);
+            return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
+            // TODO: 兼容离线玩家处理并接入StreackLib的玩家
+          } else {
+            Player targetPlayer = Bukkit.getPlayer(target);
+            parsed = PlaceholderAPI.setPlaceholders(targetPlayer, query);
+            if (targetPlayer == null) {
+              return jsonResponse(200, "OK: Operation has been completed successfully.", parsed);
+            } else {
+              return jsonResponse(203, "OK: Notice that your target player is offline or can't be found.", parsed);
+            }
+          }
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          return jsonResponse(500, "Internal Server Error: Unknown error emerged.", null);
         }
-      } catch (Exception ex) {
-        ex.printStackTrace();
-        return jsonResponse(500, "Internal Server Error: Unknown error emerged.", null);
-      }
-    });
+      });
+    } catch (Exception e) {
+      getLogger().severe("目标路径已被占用，无法注册处理器：" + e.getMessage());
+      e.printStackTrace();
+      getServer().getPluginManager().disablePlugin(this);
+    }
     getLogger().info("已注册 HTTP 监听路径: " + path);
   }
 
