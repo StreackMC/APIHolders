@@ -25,7 +25,7 @@ public class plugin extends JavaPlugin {
   public String path;
   public Boolean whiteMode;
   public List<?> rawList;
-  public Boolean corsAllowed;
+  public String corsHeader;
   // public LiteralArgumentBuilder<CommandSourceStack> commandTree = Commands.literal("api-holders");
 
   @Override
@@ -74,6 +74,7 @@ public class plugin extends JavaPlugin {
     path = conf.getString("path", "/api/placeholder");
     whiteMode = conf.getBoolean("white-mode", true);
     rawList = conf.getList("list");
+    corsHeader = conf.getString("cors-allowed", "*");
   }
 
   // /**
@@ -199,7 +200,9 @@ public class plugin extends JavaPlugin {
     JSONObject root = new JSONObject();
     root.put("status", status);
     root.put("result", respond);
-    return newFixedLengthResponse(NanoHTTPD.Response.Status.lookup(code),
-        "application/json", root.toJSONString());
+    NanoHTTPD.Response rsp = newFixedLengthResponse(NanoHTTPD.Response.Status.lookup(code),
+      "application/json", root.toJSONString());
+    rsp.addHeader("Access-Control-Allow-Origin", corsHeader);
+    return rsp;
   }
 }
