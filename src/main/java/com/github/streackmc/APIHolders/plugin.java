@@ -25,6 +25,7 @@ public class plugin extends JavaPlugin {
   public String path;
   public Boolean whiteMode;
   public List<?> rawList;
+  public Boolean corsAllowed;
   // public LiteralArgumentBuilder<CommandSourceStack> commandTree = Commands.literal("api-holders");
 
   @Override
@@ -65,7 +66,9 @@ public class plugin extends JavaPlugin {
    * @return void
    */
   private void reloadConf() {
-    httpServer.removeHandler(path);
+    if (path != null) {
+      httpServer.removeHandler(path);
+    }
     saveDefaultConfig();
     conf = getConfig();
     path = conf.getString("path", "/api/placeholder");
@@ -100,7 +103,7 @@ public class plugin extends JavaPlugin {
           String target;
           if (param.get("query") == null) {
             return jsonResponse(400, "Bad Request: Missing parameter [query].", null);
-          } else {
+          } else {//TODO:添加查询缓存机制
             query = String.join("", param.get("query"));
             if (!query.startsWith("%")) {
               query = "%" + query;
