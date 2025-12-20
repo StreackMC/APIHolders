@@ -11,8 +11,9 @@
   <properties>
     <streacklib.version>0.3.0</streacklib.version>
     <!-- <streacklib.version>master-SNAPSHOT</streacklib.version> -->
-    <maven.compiler.souce>17</maven.compiler.souce>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <paper.version>1.21.8-R0.1-SNAPSHOT</paper.version>
     <spigot.version>1.21.5-R0.1-SNAPSHOT</spigot.version>
@@ -89,7 +90,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <release>17</release>
+          <release>21</release>
         </configuration>
       </plugin>
       <plugin>
