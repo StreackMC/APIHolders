@@ -6,6 +6,10 @@ import fi.iki.elonen.NanoHTTPD;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import java.util.Locale;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -205,4 +209,44 @@ public class plugin extends JavaPlugin {
     rsp.addHeader("Access-Control-Allow-Origin", corsHeader);
     return rsp;
   }
+
+  /**
+   * 命令处理器
+   */
+  @Override
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (!"apiholders".equalsIgnoreCase(command.getName())) {
+      return false;
+    }
+    boolean isConsole = sender instanceof ConsoleCommandSender;
+    if (!isConsole && !sender.hasPermission("apiholders.commmand")) {
+      sender.sendMessage("§c未知或不存在的命令。");
+      return true;
+    }
+    if (args == null || args.length == 0) {
+      sender.sendMessage("§e用法: /apiholders <version|reload>");
+      return true;
+    }
+    String sub = args[0].toLowerCase(Locale.ROOT);
+    switch (sub) {
+      case "version":
+        sender.sendMessage("APIHolders version: " + getDescription().getVersion());
+        break;
+      case "reload":
+        try {
+          reloadConf();
+          registerHttpHandler();
+          sender.sendMessage("§a配置已重载。");
+        } catch (Exception e) {
+          sender.sendMessage("§c重载失败: " + e.getMessage());
+          getLogger().severe("配置重载时出错: " + e.getMessage());
+          e.printStackTrace();
+        }
+        break;
+      default:
+        sender.sendMessage("§e未知子命令. 用法: /apiholders <version|reload>");
+    }
+    return true;
+  }
+
 }
